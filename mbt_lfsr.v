@@ -1,6 +1,6 @@
 // MIT License
 
-// Copyright (c) 2025 Kaveh Fazli
+// Copyright (c) 2026 Kaveh Fazli
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,8 +29,9 @@
  * Description: This is a general parameterized multi-bit throughput LFSR
  *              Can be used for 2- 4- or 6- tap LFSRs
  *              No limitation on the Width
- *              Limitation on Throghput is defined by TAPs and width as: 
- *              MAX(TAPs) + 1 > WIDTH - 2 * Throghput
+ *              Limitation on Throghput is defined by TAPs and width. 
+ *              The following equation must be satisfied:
+ *              MAX(TAPs) < WIDTH - Throghput
  *
  * Parameters:
  *              WIDTH: The number of LFSR register bits
@@ -52,7 +53,8 @@
  *
  * Dependencies: None 
  *
- * Revision: Revision 1.00 - File Created
+ * Revision: Rev 1.00 - File Created
+ * Revision: Rev 2.00 - Parameter limitations revised
  *
  ****************************************************************************/
 
@@ -60,7 +62,7 @@
 
 module mbt_lfsr(out, clk, reset, seed_str, seed_val);
 
-  parameter WIDTH = 26; //# of LFSR bits (n)
+  parameter WIDTH = 28; //# of LFSR bits (n)
   parameter TPUT = 8;   //# of TPUT bits (k)
   // Up to 6 taps can be defined. Leave unused TAPs to 0
   parameter TAP0 = 0;
@@ -87,10 +89,11 @@ module mbt_lfsr(out, clk, reset, seed_str, seed_val);
     //I know, the above lines can be combined into a large line
     //But it is more readable and debuggable this way
   
-    if ((MAX_T + 1) > (WIDTH - TPUT - TPUT)) begin : CHK_PARAMS
+    if (MAX_T  > (WIDTH - TPUT)) begin : CHK_PARAMS
       // This invalid line generates compilation error
       invalid_line();
     end else begin : PARAMS_PASS
+      // MAX_T =< (WIDTH - TPUT)
       // Do nothing
     end
   endgenerate  
